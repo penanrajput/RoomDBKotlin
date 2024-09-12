@@ -5,6 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
 import com.example.roomdbkotlin.databinding.ActivityMainBinding
@@ -45,19 +46,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.button2.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                val list = db.userDao().getAllUser()
-                if (list.isNotEmpty()) {
-                    val user = list[0]
-                    launch(Dispatchers.Main) {
-                        binding.textView.text = user.name
-                        binding.textView2.text = user.number
-                        binding.textView3.text = user.address
-                        binding.textView4.text = user.age.toString()
-                    }
+
+        db.userDao().getAllUser().observe(this, Observer { list ->
+            if (list.isNotEmpty()) {
+                with(list[list.size - 1]) {
+                    binding.textView.text = name + id
+                    binding.textView2.text = number
+                    binding.textView3.text = address
+                    binding.textView4.text = age.toString()
                 }
             }
-        }
+        })
+
+
     }
+
 }
